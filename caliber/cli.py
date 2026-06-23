@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 import numpy as np
 import typer
@@ -37,7 +37,7 @@ app = typer.Typer(
 )
 
 
-def _load_csv(path: Path) -> np.ndarray:
+def _load_csv(path: Path) -> np.ndarray[Any, Any]:
     """Load a 1-D float array from a CSV file.
 
     Header row is auto-detected. Multi-column files use the first column only.

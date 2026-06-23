@@ -98,4 +98,6 @@ def benjamini_hochberg(
     # Map back to input order.
     rejected = np.empty(n, dtype=bool)
     rejected[order] = rejected_sorted
-    return rejected.tolist()  # type: ignore[no-any-return]
+    # Explicit list comprehension keeps the return type as list[bool] across
+    # mypy versions; .tolist() returns Any on some numpy-stub versions.
+    return [bool(x) for x in rejected]

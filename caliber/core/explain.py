@@ -38,6 +38,7 @@ Examples
 from __future__ import annotations
 
 from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
@@ -190,7 +191,7 @@ def _validate_optional_length(
 
 
 def _stratify(
-    old: np.ndarray, new: np.ndarray, categories: Sequence[str]
+    old: np.ndarray[Any, Any], new: np.ndarray[Any, Any], categories: Sequence[str]
 ) -> list[Stratum]:
     """Compute one Stratum per unique category in ``categories``."""
     result: list[Stratum] = []
@@ -224,8 +225,8 @@ def _extreme_category_names(
 
 def _find_driving_examples(
     *,
-    old: np.ndarray,
-    new: np.ndarray,
+    old: np.ndarray[Any, Any],
+    new: np.ndarray[Any, Any],
     inputs: Sequence[str] | None,
     old_outputs: Sequence[str] | None,
     new_outputs: Sequence[str] | None,
@@ -259,8 +260,8 @@ def _find_driving_examples(
 
 def _build_flip(
     i: int,
-    old: np.ndarray,
-    new: np.ndarray,
+    old: np.ndarray[Any, Any],
+    new: np.ndarray[Any, Any],
     inputs: Sequence[str] | None,
     old_outputs: Sequence[str] | None,
     new_outputs: Sequence[str] | None,

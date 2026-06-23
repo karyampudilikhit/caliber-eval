@@ -14,5 +14,5 @@ def from_braintrust(
     scorer: str,
     api_key: str | None = None,
     **kwargs: Any,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     raise NotImplementedError("from_braintrust arrives in session 6")

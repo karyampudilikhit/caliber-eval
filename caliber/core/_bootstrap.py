@@ -30,11 +30,13 @@ References
 
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 
 def paired_bootstrap_ci(
-    diff: np.ndarray,
+    diff: np.ndarray[Any, Any],
     *,
     confidence_level: float,
     n_bootstrap: int,

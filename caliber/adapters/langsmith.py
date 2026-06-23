@@ -14,5 +14,5 @@ def from_langsmith(
     experiment_b: str,
     feedback_key: str,
     **kwargs: Any,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     raise NotImplementedError("from_langsmith arrives in session 6")

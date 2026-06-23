@@ -31,7 +31,7 @@ References
 from __future__ import annotations
 
 from collections.abc import Sequence
-from typing import Literal
+from typing import Any, Literal
 
 import numpy as np
 from scipy import stats
@@ -39,7 +39,7 @@ from scipy import stats
 from caliber.core._bootstrap import paired_bootstrap_ci
 from caliber.core.types import CompareResult, Verdict
 
-ArrayLike = Sequence[float] | np.ndarray
+ArrayLike = Sequence[float] | np.ndarray[Any, Any]
 
 # Auto-selection thresholds. Documented here so users can audit the heuristic.
 _AUTO_MIN_N_FOR_T = 30          # below this, always bootstrap (CLT too weak)
@@ -193,7 +193,7 @@ def compare(
     )
 
 
-def _validate_array(x: ArrayLike, name: str) -> np.ndarray:
+def _validate_array(x: ArrayLike, name: str) -> np.ndarray[Any, Any]:
     """Coerce input to a 1-D float64 ndarray; reject empty / non-finite / multi-dim."""
     arr = np.asarray(x, dtype=np.float64)
     if arr.ndim != 1:
@@ -205,7 +205,7 @@ def _validate_array(x: ArrayLike, name: str) -> np.ndarray:
     return arr
 
 
-def _select_method(diff: np.ndarray) -> Literal["paired_t", "paired_bootstrap"]:
+def _select_method(diff: np.ndarray[Any, Any]) -> Literal["paired_t", "paired_bootstrap"]:
     """Choose between paired-t and paired-bootstrap for ``method='auto'``.
 
     Decision rule (see module docstring for rationale):
@@ -227,7 +227,7 @@ def _select_method(diff: np.ndarray) -> Literal["paired_t", "paired_bootstrap"]:
 
 
 def _paired_t_ci(
-    diff: np.ndarray, confidence_level: float
+    diff: np.ndarray[Any, Any], confidence_level: float
 ) -> tuple[float, float, float, float]:
     """Return (delta, ci_lower, ci_upper, p_value) for the paired t-test.
 
@@ -261,7 +261,7 @@ def _decide_verdict(
     delta: float,
     ci_lower: float,
     ci_upper: float,
-    diff: np.ndarray,
+    diff: np.ndarray[Any, Any],
     confidence_level: float,
     practical_threshold: float,
     target_effect: float | None,

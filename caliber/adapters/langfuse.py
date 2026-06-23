@@ -14,5 +14,5 @@ def from_langfuse(
     run_b: str,
     metric: str,
     **kwargs: Any,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray[Any, Any], np.ndarray[Any, Any]]:
     raise NotImplementedError("from_langfuse arrives in session 6")
