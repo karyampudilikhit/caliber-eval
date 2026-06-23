@@ -126,6 +126,46 @@ for score in production_score_stream():
 
 Or use `CUSUMDetector(target_mean=..., target_std=...)` when you know the H₀ target.
 
+### "OK, the change is real — but WHERE did the gain come from?"
+
+`compare()` tells you whether the difference is statistically real. `explain()`
+breaks it down by category and surfaces the specific examples that drove it:
+
+```python
+r = caliber.explain(
+    old_scores, new_scores,
+    inputs=questions,                # the prompts/questions (optional)
+    old_outputs=old_model_responses, # what the old model said (optional)
+    new_outputs=new_model_responses, # what the new model said (optional)
+    categories=["math", "math", "word", "code", ...],  # one tag per example
+    top_n_examples=3,
+)
+
+print(r.summary)
+```
+
+```
+Verdict: BETTER (score Δ=+0.5333, 95% CI [+0.37, +0.70], p=0.0001, n=30)
+
+By category (sorted by delta):
+  PEMDAS      n=5    old=0%    new=100%  Δ +100%
+  algebra     n=5    old=0%    new=100%  Δ +100%
+  word        n=10   old=40%   new=90%   Δ +50%
+  percent     n=5    old=80%   new=100%  Δ +20%
+  powers      n=5    old=100%  new=100%  Δ +0%
+
+Largest gain: PEMDAS.  Smallest gain: powers.
+
+Top 3 improvement(s):
+  [#0] (PEMDAS)  Compute: 8 + 4 * 3 - 2     Δ +1.00
+  [#3] (algebra) If 3x + 7 = 25, what is x? Δ +1.00
+  [#6] (word)    The sum of three...        Δ +1.00
+```
+
+No LLM call — pure data analysis. The output tells you exactly which slice of
+your eval the improvement came from, so you can write a sharper headline:
+*"CoT helped on rule-application tasks but didn't help on simple lookups."*
+
 ---
 
 ## CLI
@@ -175,6 +215,7 @@ Under the hood:
 | Module | Status |
 |---|---|
 | `caliber.compare` — verdict on paired scores | ✅ |
+| `caliber.explain` — verdict + per-category breakdown + driving examples | ✅ |
 | `caliber.sample_size` — required n for a target effect | ✅ |
 | `caliber.benjamini_hochberg` — FDR correction | ✅ |
 | `caliber.SequentialTester` — group-sequential design | ✅ |

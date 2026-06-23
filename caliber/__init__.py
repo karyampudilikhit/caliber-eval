@@ -17,13 +17,17 @@ import contextlib
 
 from caliber.core.compare import compare
 from caliber.core.drift import CUSUMDetector, PageHinkleyDetector
+from caliber.core.explain import explain
 from caliber.core.multiple import benjamini_hochberg
 from caliber.core.sample_size import sample_size
 from caliber.core.sequential import SequentialTester
 from caliber.core.types import (
     CompareResult,
     DriftEvent,
+    ExampleFlip,
+    ExplanationResult,
     SampleSizeResult,
+    Stratum,
     Verdict,
 )
 from caliber.version import __version__
@@ -32,13 +36,17 @@ __all__ = [
     "CUSUMDetector",
     "CompareResult",
     "DriftEvent",
+    "ExampleFlip",
+    "ExplanationResult",
     "PageHinkleyDetector",
     "SampleSizeResult",
     "SequentialTester",
+    "Stratum",
     "Verdict",
     "__version__",
     "benjamini_hochberg",
     "compare",
+    "explain",
     "sample_size",
 ]
 

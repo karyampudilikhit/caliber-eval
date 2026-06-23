@@ -58,3 +58,64 @@ class DriftEvent(BaseModel):
     magnitude: float
     p_value: float = Field(ge=0.0, le=1.0)
     method: Literal["page_hinkley", "cusum"]
+
+
+class Stratum(BaseModel):
+    """Per-category breakdown used by `explain()`.
+
+    For binary scores, ``old_accuracy``/``new_accuracy`` are accuracies in
+    [0, 1]. For continuous scores they're mean scores.
+    """
+
+    name: str
+    n: int = Field(gt=0)
+    old_accuracy: float
+    new_accuracy: float
+    delta: float
+
+
+class ExampleFlip(BaseModel):
+    """A single example where new_score differs from old_score.
+
+    Used by `explain()` to surface specific examples that drove the verdict.
+    Positive ``delta`` means an improvement; negative means a regression.
+    The ``input``/``old_output``/``new_output``/``category`` fields are
+    populated only when the corresponding sequences were passed to `explain()`.
+    """
+
+    index: int = Field(ge=0)
+    input: str | None = None
+    old_score: float
+    new_score: float
+    delta: float
+    old_output: str | None = None
+    new_output: str | None = None
+    category: str | None = None
+
+
+class ExplanationResult(BaseModel):
+    """The return value of `explain()`.
+
+    Contains the same statistical fields as `CompareResult` (verdict, CI,
+    p-value) plus the explainability layer: per-category stratification and
+    the specific examples that drove the verdict.
+    """
+
+    verdict: Literal["BETTER", "WORSE", "INCONCLUSIVE", "NO_CHANGE"]
+    mean_difference: float
+    ci_lower: float
+    ci_upper: float
+    confidence_level: float = Field(ge=0.0, le=1.0)
+    p_value: float = Field(ge=0.0, le=1.0)
+    n: int = Field(gt=0)
+    method: str
+    strata: list[Stratum] = Field(default_factory=list)
+    biggest_gain_category: str | None = None
+    smallest_gain_category: str | None = None
+    top_improvements: list[ExampleFlip] = Field(default_factory=list)
+    top_regressions: list[ExampleFlip] = Field(default_factory=list)
+    summary: str
+
+    @property
+    def ci(self) -> tuple[float, float]:
+        return (self.ci_lower, self.ci_upper)
