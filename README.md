@@ -166,6 +166,55 @@ No LLM call — pure data analysis. The output tells you exactly which slice of
 your eval the improvement came from, so you can write a sharper headline:
 *"CoT helped on rule-application tasks but didn't help on simple lookups."*
 
+### "I want an LLM to read the driving examples and propose the pattern"
+
+When you want the textual hypothesis, pass an `ExplanationResult` to a judge:
+
+```python
+import caliber
+
+exp = caliber.explain(
+    old_scores, new_scores,
+    inputs=questions,
+    old_outputs=old_responses,
+    new_outputs=new_responses,
+    categories=categories,
+)
+
+# Use any LLM provider — Ollama runs locally, no API key.
+judge = caliber.OllamaProvider(model="phi3")
+result = caliber.judge_hypothesis(exp, judge, n_examples=3)
+
+print(result.hypothesis)
+# "Prompt B consistently follows mathematical order of operations and uses
+#  step-by-step instructions to solve equations, which leads it to provide
+#  correct answers. In contrast, Prompt A either ignores the proper sequence
+#  or fails to explain its steps clearly."
+
+print(f"  ({result.provider}/{result.model}, {result.n_examples_reviewed} examples)")
+# ollama/phi3, 3 examples
+```
+
+The hypothesis is **AI-generated, not verified** — `result.is_ai_generated=True`
+flags it as a starting point for review, not a proven claim. Bring your own
+provider for other LLMs by implementing the 3-line `LLMProvider` protocol:
+
+```python
+class OpenAIProvider:
+    name = "openai"
+    def __init__(self, model="gpt-4o-mini"):
+        from openai import OpenAI
+        self.model = model
+        self._client = OpenAI()
+    def chat(self, prompt: str) -> str:
+        r = self._client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0,
+        )
+        return r.choices[0].message.content or ""
+```
+
 ---
 
 ## CLI
@@ -216,6 +265,7 @@ Under the hood:
 |---|---|
 | `caliber.compare` — verdict on paired scores | ✅ |
 | `caliber.explain` — verdict + per-category breakdown + driving examples | ✅ |
+| `caliber.judge_hypothesis` — LLM-judged "why" hypothesis (pluggable provider) | ✅ |
 | `caliber.sample_size` — required n for a target effect | ✅ |
 | `caliber.benjamini_hochberg` — FDR correction | ✅ |
 | `caliber.SequentialTester` — group-sequential design | ✅ |

@@ -93,6 +93,25 @@ class ExampleFlip(BaseModel):
     category: str | None = None
 
 
+class JudgedHypothesis(BaseModel):
+    """An AI-generated hypothesis for *why* two prompt versions differ.
+
+    Produced by `judge_hypothesis()` after reading the driving examples from
+    an `ExplanationResult`. The hypothesis text is the LLM's proposed pattern
+    in 1-2 sentences; the metadata records which model produced it.
+
+    Always marked ``is_ai_generated=True`` — Caliber doesn't verify the
+    hypothesis. The user should treat it as a starting point for review,
+    not a proven explanation.
+    """
+
+    hypothesis: str
+    provider: str           # "ollama", "openai", "anthropic", "mock", ...
+    model: str              # "phi3", "gpt-4", "claude-3-5-sonnet", ...
+    n_examples_reviewed: int = Field(ge=1)
+    is_ai_generated: bool = True
+
+
 class ExplanationResult(BaseModel):
     """The return value of `explain()`.
 
